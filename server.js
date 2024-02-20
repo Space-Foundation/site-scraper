@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import { Document, Packer, Paragraph, TextRun } from 'docx'; // Added for docx support
+import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx'; // Added for docx support
 const app = express();
 const port = 3000;
 
@@ -22,45 +22,47 @@ app.post("/scrape", async (req, res) => {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2" });
 
-const data = await page.evaluate(() => {
-  const metaTitle = document.querySelector("title")?.innerText;
-  const metaDescription = document
-    .querySelector('meta[name="description"]')
-    ?.getAttribute("content");
-  const keywords = document
-    .querySelector('meta[name="keywords"]')
-    ?.getAttribute("content");
-  const pageText = document.body.innerText;
-  const links = Array.from(document.querySelectorAll("a")).map((a) => ({
-    href: a.href,
-    text: a.innerText,
-  }));
-  const metaTags = Array.from(document.querySelectorAll("meta")).map(
-    (meta) => ({
-      name: meta.getAttribute("name"),
-      content: meta.getAttribute("content"),
-    })
-  );
-  const ctas = Array.from(
-    document.querySelectorAll('button, input[type="submit"], a.cta, a.button')
-  ).map((cta) => ({ text: cta.innerText, href: cta.href || null }));
+  const data = await page.evaluate(() => {
+    // Replace <br>, <p>, and <div> tags with line breaks before extracting text
+    document.querySelectorAll('br').forEach(el => el.parentNode.replaceChild(document.createTextNode('\n'), el));
+    document.querySelectorAll('p, div').forEach(el => el.appendChild(document.createTextNode('\n')));
 
-  return {
-    metaTitle,
-    metaDescription,
-    keywords,
-    pageText,
-    links,
-    metaTags,
-    ctas,
-  };
-});
+    const metaTitle = document.querySelector("title")?.innerText;
+    const metaDescription = document
+      .querySelector('meta[name="description"]')
+      ?.getAttribute("content");
+    const keywords = document
+      .querySelector('meta[name="keywords"]')
+      ?.getAttribute("content");
+    const pageText = document.body.innerText; // Now includes simple formatting
+    const links = Array.from(document.querySelectorAll("a")).map((a) => ({
+      href: a.href,
+      text: a.innerText,
+    }));
+    const metaTags = Array.from(document.querySelectorAll("meta")).map(
+      (meta) => ({
+        name: meta.getAttribute("name"),
+        content: meta.getAttribute("content"),
+      })
+    );
+    const ctas = Array.from(
+      document.querySelectorAll('button, input[type="submit"], a.cta, a.button')
+    ).map((cta) => ({ text: cta.innerText, href: cta.href || null }));
 
-  // Add the URL to the data object before sending it to the template
-  data.url = url; // This line adds the URL to the data object
+    return {
+      metaTitle,
+      metaDescription,
+      keywords,
+      pageText,
+      links,
+      metaTags,
+      ctas,
+    };
+  });
 
+  data.url = url;
   await browser.close();
-  lastScrapedData = data; // Store the scraped data, now including the URL
+  lastScrapedData = data;
   res.render("index", { title: "Web Scraper", data });
 });
 
@@ -74,57 +76,43 @@ app.get("/download", async (req, res) => {
   const doc = new Document({
     sections: [
       {
+        properties: {},
         children: [
           new Paragraph({
-            children: [
-              new TextRun("Web Scraper Results"),
-              new TextRun({
-                text: "Meta Title: " + lastScrapedData.metaTitle,
-                break: 1,
-              }),
-              new TextRun({
-                text: "Meta Description: " + lastScrapedData.metaDescription,
-                break: 1,
-              }),
-              new TextRun({
-                text: "Keywords: " + lastScrapedData.keywords,
-                break: 1,
-              }),
-              new TextRun({
-                text: "Page Text: " + lastScrapedData.pageText,
-                break: 1,
-              }),
-              // Add more TextRuns for other data points
-            ],
+            text: "Web Scraper Results",
+            heading: HeadingLevel.TITLE,
           }),
-          // Add a paragraph for links
           new Paragraph({
-            children: lastScrapedData.links.map(link => 
-              new TextRun({
-                text: `${link.text}: ${link.href}`,
-                break: 1,
-              })
-            ),
+            text: "Meta Title: " + lastScrapedData.metaTitle,
+            heading: HeadingLevel.HEADING_1,
           }),
-          // Add a paragraph for meta tags
           new Paragraph({
-            children: lastScrapedData.metaTags.map(meta => 
-              new TextRun({
-                text: `${meta.name}: ${meta.content}`,
-                break: 1,
-              })
-            ),
+            text: "Meta Description: " + lastScrapedData.metaDescription,
+            heading: HeadingLevel.HEADING_2,
           }),
-          // Add a paragraph for CTAs
           new Paragraph({
-            children: lastScrapedData.ctas.map(cta => 
-              new TextRun({
-                text: `${cta.text}: ${cta.href}`,
-                break: 1,
-              })
-            ),
+            text: "Keywords: " + lastScrapedData.keywords,
+            heading: HeadingLevel.HEADING_2,
           }),
-          // ... Add more Paragraphs for other sections
+          // Assuming pageText is parsed into paragraphs
+          ...lastScrapedData.pageText.map(paragraph => new Paragraph({
+            text: paragraph,
+            spacing: {
+              after: 200, // space after paragraph
+            },
+          })),
+          // Example of adding a bulleted list for links
+          new Paragraph({
+            text: "Links:",
+            heading: HeadingLevel.HEADING_2,
+          }),
+          ...lastScrapedData.links.map(link => new Paragraph({
+            text: `${link.text}: ${link.href}`,
+            bullet: {
+              level: 0, // bullet level
+            },
+          })),
+          // Further sections...
         ],
       },
     ],
