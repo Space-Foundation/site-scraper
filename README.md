@@ -1,21 +1,65 @@
-import express from "express";
-import bodyParser from "body-parser";
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import { Document, Packer, Paragraph, TextRun } from 'docx'; // Added for docx support
+# Project Documentation
+
+## Overview
+This project is a web scraper application built using Node.js and Express. It utilizes Puppeteer for scraping web pages and the [docx](file:///Users/CMcNeil/Sites/SiteScraper/server.js#5%2C55-5%2C55) library to generate and download a Word document containing the scraped data. The application has a simple web interface for inputting the URL to be scraped and displays the scraped data. It supports scraping meta titles, descriptions, keywords, page text, links, meta tags, and CTAs (Call to Action buttons).
+
+## How to Run the Project
+
+### Prerequisites
+- Node.js installed on your system.
+- Knowledge of using the terminal or command prompt.
+
+### Steps to Run
+
+1. **Clone the Repository**
+   Clone the project to your local machine using Git.
+
+2. **Install Dependencies**
+   Navigate to the project directory in your terminal and run:
+   ```bash
+   npm install
+   ```
+   This command installs all the necessary packages listed in `package-lock.json`.
+
+3. **Start the Server**
+   Run the following command to start the server:
+   ```bash
+   npm start
+   ```
+   Or, if you have `nodemon` installed and prefer it for development:
+   ```bash
+   nodemon server.js
+   ```
+
+4. **Access the Web Interface**
+   Open a web browser and go to `http://localhost:3000`. You should see the web interface of the scraper.
+
+5. **Use the Application**
+   - Enter the URL of the page you want to scrape in the input field.
+   - Click the "Scrape" button.
+   - The application will scrape the data and display it on the same page.
+   - To download the scraped data as a Word document, click the "Download" button.
+
+### Key Components
+
+- **Server Setup**: The server is set up using Express and listens on port 3000. See the code snippet below for server initialization and starting.
+  
+```6:7:server.js
 const app = express();
 const port = 3000;
+```
 
-puppeteer.use(StealthPlugin());
-
-app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public")); // Serve static files
-
-app.get("/", (req, res) => {
-  res.render("index", { title: "Web Scraper", data: null });
+  
+```140:142:server.js
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
+```
 
+
+- **Web Scraping**: Puppeteer is used for web scraping. The `/scrape` endpoint handles the scraping logic.
+  
+```19:65:server.js
 app.post("/scrape", async (req, res) => {
   const url = req.body.url;
   const browser = await puppeteer.launch();
@@ -63,9 +107,12 @@ const data = await page.evaluate(() => {
   lastScrapedData = data; // Store the scraped data, now including the URL
   res.render("index", { title: "Web Scraper", data });
 });
+```
 
-let lastScrapedData = null; // This will hold the last scraped data
 
+- **Generating and Downloading Word Document**: The `/download` endpoint generates a Word document with the scraped data using the `docx` library and sends it as a response for the user to download.
+  
+```69:138:server.js
 app.get("/download", async (req, res) => {
   if (!lastScrapedData) {
     return res.status(400).send('No data available to download.');
@@ -136,7 +183,11 @@ app.get("/download", async (req, res) => {
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
   res.send(Buffer.from(b64string, 'base64'));
 });
+```
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+
+### Notes
+- Ensure that Puppeteer is compatible with your system. You might need additional setup on some operating systems.
+- The application stores the last scraped data in memory. If the server restarts, this data will be lost.
+
+This documentation provides a concise overview of running and understanding the web scraper project. For detailed exploration, refer to the codebase and comments within.

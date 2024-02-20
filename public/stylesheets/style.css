@@ -1,0 +1,100 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f7f7;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+  margin: 0;
+  max-width: 1200px; /* Limit the max width */
+  margin: 0 auto; /* Center the body content */
+}
+
+h1 {
+  color: #2c3e50;
+  font-size: 2em; /* Increase the size for better visibility */
+  margin-bottom: 0.5em; /* Add some space below the heading */
+  text-align: center;
+}
+
+form {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background: #5cb85c;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background: #4cae4c;
+}
+
+textarea {
+  width: 100%;
+  height: 200px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+a {
+  display: inline-block;
+  margin-top: 20px;
+  background: #3498db;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+a:hover {
+  background: #2980b9;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+    max-width: none; /* Allow the body to be responsive */
+  }
+
+  form,
+  textarea,
+  button[type="submit"] {
+    width: 100%; /* Full width on smaller screens */
+    margin: 0 auto;
+  }
+}

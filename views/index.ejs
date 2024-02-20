@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Web Scraper</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
     <h1>Web Scraper</h1>
@@ -15,12 +16,39 @@
       <button type="submit">Scrape</button>
     </form>
     <% if (data) { %>
+    <h2>Scraped URL: <%= data.url %></h2>
+    <!-- Add this line -->
     <h2>Results:</h2>
     <p><strong>Meta Title:</strong> <%= data.metaTitle %></p>
     <p><strong>Meta Description:</strong> <%= data.metaDescription %></p>
     <p><strong>Keywords:</strong> <%= data.keywords %></p>
     <h3>Page Text:</h3>
-    <textarea rows="10" cols="50"><%= data.pageText %></textarea>
+    <div><%= data.pageText %></div>
+    <br />
+    <h3>Links:</h3>
+    <ul>
+      <% data.links.forEach(link => { %>
+      <li><%= link.text %> (<%= link.href %>)</li>
+      <% }) %>
+    </ul>
+    <hr />
+    <h3>Meta Tags:</h3>
+    <ul>
+      <% data.metaTags.forEach(metaTag => { %>
+      <li><%= metaTag.name %>: <%= metaTag.content %></li>
+      <% }) %>
+    </ul>
+    <h3>CTAs:</h3>
+    <ul>
+      <% data.ctas.forEach(cta => { %>
+      <li><%= cta.text %> (<%= cta.href %>)</li>
+      <% }) %>
+    </ul>
+    <br />
+    <a href="/">Scrape another URL</a>
+    <form action="/download" method="get">
+      <button type="submit">Download as Word Doc</button>
+    </form>
     <% } %>
   </body>
 </html>
