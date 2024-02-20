@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Web Scraper</title>
+  </head>
+  <body>
+    <h1>Web Scraper</h1>
+    <form action="/scrape" method="POST">
+      <input
+        type="text"
+        name="url"
+        placeholder="Enter URL to scrape"
+        required
+      />
+      <button type="submit">Scrape</button>
+    </form>
+    <% if (data) { %>
+    <h2>Results:</h2>
+    <p><strong>Meta Title:</strong> <%= data.metaTitle %></p>
+    <p><strong>Meta Description:</strong> <%= data.metaDescription %></p>
+    <p><strong>Keywords:</strong> <%= data.keywords %></p>
+    <h3>Page Text:</h3>
+    <textarea rows="10" cols="50"><%= data.pageText %></textarea>
+    <% } %>
+  </body>
+</html>
