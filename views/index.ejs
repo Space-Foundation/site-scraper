@@ -3,35 +3,6 @@
   <head>
     <title>Web Scraper</title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <style>
-      .loader {
-        border: 8px solid #f3f3f3; /* Light grey */
-        border-top: 8px solid #3498db; /* Blue */
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        display: none; /* Hidden by default */
-        position: fixed; /* Use fixed or absolute positioning */
-        left: 50%;
-        transform: translateX(-50%);
-        /* Optional: Adjust the top value to position the loader vertically as desired */
-        top: 50%;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-        100% {
-          transform: translateX(-50%) rotate(360deg);
-        }
-      }
-
-      .hidden {
-        display: none;
-      }
-    </style>
   </head>
   <body>
     <h1>Web Scraper</h1>
@@ -83,8 +54,13 @@
     <% } %>
     <script>
       function showLoader() {
+        var overlay = document.createElement("div");
+        overlay.setAttribute("id", "overlay");
+        document.body.appendChild(overlay); // Append overlay to the body
+        document.getElementById("overlay").style.display = "block"; // Display the overlay
+
         document.getElementById("loader").style.display = "inline-block"; // Show loader
-        document.getElementById("scrapeButton").classList.add("hidden"); // Hide button
+        document.getElementById("scrapeButton").classList.add("hidden"); // Optionally hide button
       }
     </script>
   </body>

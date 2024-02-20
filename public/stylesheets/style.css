@@ -71,13 +71,16 @@ ul li {
 }
 
 a {
-  display: inline-block;
+  display: inline-block; /* Allows the link to respect the container's width */
   margin-top: 20px;
   background: #3498db;
   color: white;
   padding: 10px 15px;
   border-radius: 4px;
   text-decoration: none;
+  word-wrap: break-word; /* Ensures long words can break and wrap to the next line */
+  overflow-wrap: break-word; /* Alternative to word-wrap for better support */
+  white-space: normal; /* Ensures whitespace inside <a> elements behaves like normal text */
 }
 
 a:hover {
@@ -97,4 +100,59 @@ a:hover {
     width: 100%; /* Full width on smaller screens */
     margin: 0 auto;
   }
+}
+.container {
+  max-width: 100%; /* Ensures the container doesn't exceed the width of its parent */
+  overflow-x: auto; /* Allows horizontal scrolling if needed */
+  word-wrap: break-word; /* Allows long words to break and wrap to the next line */
+  overflow-wrap: break-word; /* Ensures proper word wrapping */
+}
+p,
+div {
+  max-width: 100%;
+  overflow-x: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3; /* Ensure loader is above the overlay */
+}
+
+@keyframes spin {
+  0% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+.hidden {
+  display: none;
 }
